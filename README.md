@@ -71,6 +71,9 @@ operations affect the test, the test itself basically does a sanity run so for a
 `openSunflowerPlantDetail()`, `addSunflowerToGarden()`, `addSunflowerOnceOnly()` and `shareSunflower()` I wasn't able do this change now
 because of the challenges I encountered in terms of test execution and test clean up after runs, see section challenges for more details.
 The smaller tests with a single responsability would be beneficial to reuse in other tests.
+The test also is specific to a sunflower, I didn't assert anywhere on the test the flower being added to the Garden was in fact a plant 
+with a plant_name matching the string "Sunflower", UI tests shouldn't check for text, but also I had a look a the unit test and they are 
+asserting that the content displays in the right places/order meaning that part is covered rightfully in the right testing layer.
 
 ## Launching the app and exploring it's testability
 
