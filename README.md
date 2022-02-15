@@ -131,7 +131,7 @@ the testing CI step faster and focused on the area that needs feedback on develo
 
 ## Setup 
 
-- To set up the project use the instructions [here](https://github.com/a-padinha/sunflower#getting-started).
+- To set up the project use the instructions [here](https://github.com/android/sunflower#getting-started).
 - The project is set by default to run the tests with gradle using the command
 ```
 $ ./gradlew connectedAndroidTest   
