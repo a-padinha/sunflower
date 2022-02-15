@@ -145,4 +145,6 @@ But! if you run into build/run problems like I did, one solution in order to see
 2. Open Android studio 
 3. Run the test from the class
 
+Test running video: 
+https://user-images.githubusercontent.com/10550674/154096456-b462fcef-6d92-4c8a-a2a8-db7ce2a4d280.mov
 
