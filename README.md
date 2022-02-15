@@ -68,7 +68,7 @@ This is the test automated result:
 The scenario provided does lots of things, it navigates through 3 different screens and these screens have different states as well.
 Writing the test exactly as it was provided created a large test difficult to debug if some step fails or asyncronous 
 operations affect the test, the test itself basically does a sanity run so for a production product I would devide it in 4 tests:
-openSunflowerPlantDetail(), addSunflowerToGarden(), addSunflowerOnceOnly() and shareSunflower() I wasn't able do this change now
+`openSunflowerPlantDetail()`, `addSunflowerToGarden()`, `addSunflowerOnceOnly()` and `shareSunflower()` I wasn't able do this change now
 because of the challenges I encountered in terms of test execution and test clean up after runs, see section challenges for more details.
 The smaller tests with a single responsability would be beneficial to reuse in other tests.
 
