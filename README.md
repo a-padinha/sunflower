@@ -145,6 +145,9 @@ But! if you run into build/run problems like I did, one solution in order to see
 2. Open Android studio 
 3. Run the test from the class
 
+
+<img width="1576" alt="Screenshot 2022-02-15 at 15 47 02" src="https://user-images.githubusercontent.com/10550674/154097412-c01089ba-a2e2-4b51-86b2-3e08e28ff6c9.png">
+
 Test running video: 
-https://user-images.githubusercontent.com/10550674/154096456-b462fcef-6d92-4c8a-a2a8-db7ce2a4d280.mov
+https://user-images.githubusercontent.com/10550674/154096456-b462fcef-6d92-4c8a-a2a8-db7ce2a4d280.mov (low quality due to 10MB limit upload)
 
