@@ -14,7 +14,7 @@ This is a small test suite with Espresso tests task using the `Android/sunflower
 
 <details>
 <summary>
-This is the Test scenario I had had to automate for this exercise:
+This is the Test scenario I had to automate for this exercise:
 </summary>
 <pre>
      * 1. Open app
