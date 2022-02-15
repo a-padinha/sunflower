@@ -34,10 +34,9 @@ This is the Test scenario I had had to automate for this exercise:
 </pre>
 </details>
 
-This is the tests resulting automated test:
-
 <details>
 <summary>
+This is the tests resulting automated test:
 </summary>
 <pre>
    @Test
