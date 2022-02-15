@@ -14,7 +14,7 @@ This is a small test suite with Espresso tests task using the `Android/sunflower
 
 <details>
 <summary>
-This is the Test scenario I had to automate for this exercise:
+This is the Test scenario:
 </summary>
 <pre>
      * 1. Open app
@@ -36,7 +36,7 @@ This is the Test scenario I had to automate for this exercise:
 
 <details>
 <summary>
-This is the tests resulting automated test:
+This is the test automated result:
 </summary>
 <pre>
    @Test
@@ -70,6 +70,7 @@ Writing the test exactly as it was provided created a large test difficult to de
 operations affect the test, the test itself basically does a sanity run so for a production product I would devide it in 4 tests:
 openSunflowerPlantDetail(), addSunflowerToGarden(), addSunflowerOnceOnly() and shareSunflower() I wasn't able do this change now
 because of the challenges I encountered in terms of test execution and test clean up after runs, see section challenges for more details.
+The smaller tests with a single responsability would be beneficial to reuse in other tests.
 
 ## Launching the app and exploring it's testability
 
@@ -82,7 +83,7 @@ where needed.
 
 The project already had Unit tests and 2 UI tests (one was using a tag to be ignored) so I followed the structure that was 
 being used and tweaked the architecture to use the PageObjects pattern for the test added, this meant creating a 
-"screens" package containing the classes with the functions associated with each screen. I added a helpers class to the untilities
+"screens" package containing the classes with the functions associated with each screen. I added a helpers class to the utilities
 package for helper functions and left the test class where the other test classes were under com.google.samples.app.sunflower.
 The project uses Rules with Hilt to manage how the tests run.
 
@@ -102,7 +103,7 @@ I encountered a couple issues...
 java.lang.IllegalStateException: WorkManager is not initialized properly. You have explicitly disabled WorkManagerInitializer in your manifest, have not manually called WorkManager#initialize at this point, and your Application does not implement Configuration.Provider.
 ```
 To fix this I would firstly create an issue at the android/sunflower repo in order to expose this evidence and get some feedback.
-I would also try a couple things I encontered about the subject while investigating related with editing the custom WorkManager 
+I would also try a couple things I found about the subject while investigating related with editing the custom WorkManager 
 initialize. To work around this issue for now I invalidated caches (File > Invalidate caches), and did Clean/Rebuild project 
 (Build > Clean Project Build > Build Project) this would clear the warning for some time. 
 
