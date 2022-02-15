@@ -1,183 +1,145 @@
-Android Sunflower
-=================
+[![GitHub issues](https://img.shields.io/github/issues/a-padinha/sunflower?style=plastic)](https://github.com/a-padinha/sunflower/issues)
+[![GitHub forks](https://img.shields.io/github/forks/a-padinha/sunflower)](https://github.com/a-padinha/sunflower/network)
+[![GitHub stars](https://img.shields.io/github/stars/a-padinha/sunflower)](https://github.com/a-padinha/sunflower/stargazers)
 
-A gardening app illustrating Android development best practices with Android Jetpack.
+## Espresso UI Tests Exercise
+This is a small test suite with Espresso tests task using the `Android/sunflower` app project.
 
-Android Sunflower is currently under heavy development.
-Note that some changes (such as database schema modifications) are not backwards
-compatible and may cause the app to crash. In this
-case, please uninstall and re-install the app.
+## Table of contents
+* [Description](#description)
+* [Challenges](#Challenges)
+* [Setup](#setup)
 
-Introduction
-------------
+## Description
 
-Android Jetpack is a set of components, tools and guidance to make great Android apps. They bring
-together the existing Support Library and Architecture Components and arrange them into four
-categories:
+<details>
+<summary>
+This is the Test scenario I had had to automate for this exercise:
+</summary>
+<pre>
+     * 1. Open app
+     * 2. Check that Garden is empty
+     * 3. Open Plant list
+     * 4. Scroll to sunflower
+     * 5. Open it
+     * 6. Check we have img and description and can add plant to garden
+     * 7. Add it to garden
+     * 8. Check that user can't add more than one ('Add' button disappeared)
+     * 9. Open My Garden
+     * 10. Check Sunflower was added to garden and have planted date/last watered date and should be
+     *     watered in 3 days from last watered date
+     * 11. Open it
+     * 12. Check we have img and description and don't have 'add plant to garden' button
+     * 13. Check that user can share link to this plant via share icon from right corner 
+</pre>
+</details>
 
-![Android Jetpack](screenshots/jetpack_donut.png "Android Jetpack Components")
+This is the tests resulting automated test:
 
-Android Sunflower demonstrates utilizing these components to create a simple gardening app.
-Read the
-[Introducing Android Sunflower](https://medium.com/androiddevelopers/introducing-android-sunflower-e421b43fe0c2)
-article for a walkthrough of the app.
+<details>
+<summary>
+</summary>
+<pre>
+   @Test
+    gardenAndPlantListSanity() {
+        gardenScreen.gardenIsEmptyIsDisplayed()
+        plantListScreen.tapOnPlantListTab()
+        plantListScreen.scrollAndTapOnSunflower()
+        plantDetailScreen.plantDetailImageIsDisplayed()
+        plantDetailScreen.plantDetailDescriptionIsDisplayed()
+        plantDetailScreen.tapOnAddPlant()
+        plantDetailScreen.addPlantIsNotDisplayed()
+        plantDetailScreen.pressBack()
+        gardenScreen.tapOnGardenTab()
+        gardenScreen.plantNameIsDisplayed()
+        gardenScreen.plantPlantedDateIsDisplayed()
+        gardenScreen.plantLastWateredIsDisplayed()
+        gardenScreen.plantWaterIntervalIsDisplayed()
+        gardenScreen.tapOnPlantDetail()
+        plantDetailScreen.plantDetailImageIsDisplayed()
+        plantDetailScreen.plantDetailDescriptionIsDisplayed()
+        plantDetailScreen.addPlantIsNotDisplayed()
+        plantDetailScreen.tapOnShare()
+    }
+</pre>
+</details>
 
-Getting Started
----------------
-This project uses the Gradle build system. To build this project, use the
-`gradlew build` command or use "Import Project" in Android Studio.
+## Breaking down the manual test scenario into smaller/single responsability tests
 
-There are two Gradle tasks for testing the project:
-* `connectedAndroidTest` - for running Espresso on a connected device
-* `test` - for running unit tests
+The scenario provided does lots of things, it navigates through 3 different screens and these screens have different states as well.
+Writing the test exactly as it was provided created a large test difficult to debug if some step fails or asyncronous 
+operations affect the test, the test itself basically does a sanity run so for a production product I would devide it in 4 tests:
+openSunflowerPlantDetail(), addSunflowerToGarden(), addSunflowerOnceOnly() and shareSunflower() I wasn't able do this change now
+because of the challenges I encountered in terms of test execution and test clean up after runs, see section challenges for more details.
 
-For more resources on learning Android development, visit the
-[Developer Guides](https://developer.android.com/guide/) at
-[developer.android.com](https://developer.android.com).
+## Launching the app and exploring it's testability
 
-### Unsplash API key
+It was quite easy to get reliable identifiers as there were ids in the project to almost all the interactions 
+and checks necessary. The other routes would be to look for strings AND/OR positions in the layout which isn't great but doesn't 
+touch the app code, another way and more consistent one would be to add the ids on the main project changing slightly the app code
+where needed.
 
-Sunflower uses the [Unsplash API](https://unsplash.com/developers) to load pictures on the gallery
-screen. To use the API, you will need to obtain a free developer API key. See the
-[Unsplash API Documentation](https://unsplash.com/documentation) for instructions.
+## Files added/changed
 
-Once you have the key, add this line to the `gradle.properties` file, either in your user home
-directory (usually `~/.gradle/gradle.properties` on Linux and Mac) or in the project's root folder:
+The project already had Unit tests and 2 UI tests (one was using a tag to be ignored) so I followed the structure that was 
+being used and tweaked the architecture to use the PageObjects pattern for the test added, this meant creating a 
+"screens" package containing the classes with the functions associated with each screen. I added a helpers class to the untilities
+package for helper functions and left the test class where the other test classes were under com.google.samples.app.sunflower.
+The project uses Rules with Hilt to manage how the tests run.
 
+Files highlighted in Blue are the addictions under the `origin/A-1_addUITestsWithEspresso` branch.
+
+<img width="314" alt="Screenshot 2022-02-15 at 09 11 36" src="https://user-images.githubusercontent.com/10550674/154031781-ee42dca1-b329-41e4-a346-776a99b22c78.png">
+
+Libraries used: AndroidX, Espresso and Hamcrest.
+Language: Kotlin
+
+
+## Challenges :nut_and_bolt:
+
+I encountered a couple issues...
+1) Running the tests via gradle and using the IDE sometimes fails with the following exception: 
 ```
-unsplash_access_key=<your Unsplash access key>
+java.lang.IllegalStateException: WorkManager is not initialized properly. You have explicitly disabled WorkManagerInitializer in your manifest, have not manually called WorkManager#initialize at this point, and your Application does not implement Configuration.Provider.
 ```
+To fix this I would firstly create an issue at the android/sunflower repo in order to expose this evidence and get some feedback.
+I would also try a couple things I encontered about the subject while investigating related with editing the custom WorkManager 
+initialize. To work around this issue for now I invalidated caches (File > Invalidate caches), and did Clean/Rebuild project 
+(Build > Clean Project Build > Build Project) this would clear the warning for some time. 
 
-The app is still usable without an API key, though you won't be able to navigate to the gallery screen.
+2) There is deprecation related with Rules, the `androidx.test.rule.ActivityTestRule`. This means that Rules aren't working properly probably affecting 
+the way the test setup and teardown is set to clean up after the tests run and so when I run a test at the moment locally the app installed still has 
+the database changes the test did which affects the next run. To work around this and focus on the task which was to build a test, I used the emulator
+settings to clean caches and storage in the sunflower app manually after the test runs.
+In a product team context this isn't ideal at all for a production feature, its just a start to get something working and running and explore the challenges 
+after with the team that has the project context already.
 
-Screenshots
------------
+I believe that fixing this deprecation would solve part of the problem, another way to understand the context of the this issue would be to get in touch 
+with some of the Android/sunflower contributers reporting an issue to start the conversation on how to fix this with more investigation.
 
-![List of plants](screenshots/phone_plant_list.png "A list of plants")
-![Plant details](screenshots/phone_plant_detail.png "Details for a specific plant")
-![My Garden](screenshots/phone_my_garden.png "Plants that have been added to your garden")
+## Things I would do next :green_book:
 
-Libraries Used
---------------
-* [Foundation][0] - Components for core system capabilities, Kotlin extensions and support for
-  multidex and automated testing.
-  * [AppCompat][1] - Degrade gracefully on older versions of Android.
-  * [Android KTX][2] - Write more concise, idiomatic Kotlin code.
-  * [Test][4] - An Android testing framework for unit and runtime UI tests.
-* [Architecture][10] - A collection of libraries that help you design robust, testable, and
-  maintainable apps. Start with classes for managing your UI component lifecycle and handling data
-  persistence.
-  * [Data Binding][11] - Declaratively bind observable data to UI elements.
-  * [Lifecycles][12] - Create a UI that automatically responds to lifecycle events.
-  * [LiveData][13] - Build data objects that notify views when the underlying database changes.
-  * [Navigation][14] - Handle everything needed for in-app navigation.
-  * [Room][16] - Access your app's SQLite database with in-app objects and compile-time checks.
-  * [ViewModel][17] - Store UI-related data that isn't destroyed on app rotations. Easily schedule
-     asynchronous tasks for optimal execution.
-  * [WorkManager][18] - Manage your Android background jobs.
-* [UI][30] - Details on why and how to use UI Components in your apps - together or separate
-  * [Animations & Transitions][31] - Move widgets and transition between screens.
-  * [Fragment][34] - A basic unit of composable UI.
-  * [Layout][35] - Lay out widgets using different algorithms.
-* Third party and miscellaneous libraries
-  * [Glide][90] for image loading
-  * [Hilt][92]: for [dependency injection][93]
-  * [Kotlin Coroutines][91] for managing background threads with simplified code and reducing needs for callbacks
+- Fix the buiding and test executing issues and ensure tests run indenpendently.
+- Connect this repo to a free CI account and a test lab.
+- Experiment with other test design patterns like Robots Pattern and Screenplay Pattern in order to see which one would benefit the project in the long run.
+- Explore ways of writing readable steps with Gherkin and see pros and cons according to the project needs.
+- Explore test Rules and Hilt in terms of test setups and teardowns, data management with the goal for creating independent and fast tests.
+- Create annotations associated with app areas so I can run specific tests on a single app section via a gradle commmand, as the project grows this would make
+the testing CI step faster and focused on the area that needs feedback on development leaving potentially the full runs to overnight schedules.
+- Explore test reporting adding more logs and screenshots with `androidx.test.runner.screenshot` for example.
+- Look at the possibilities to run a device farm with cloud devices to tackle android fragmentation - increasing the devices coverage.
 
-[0]: https://developer.android.com/jetpack/components
-[1]: https://developer.android.com/topic/libraries/support-library/packages#v7-appcompat
-[2]: https://developer.android.com/kotlin/ktx
-[4]: https://developer.android.com/training/testing/
-[10]: https://developer.android.com/jetpack/arch/
-[11]: https://developer.android.com/topic/libraries/data-binding/
-[12]: https://developer.android.com/topic/libraries/architecture/lifecycle
-[13]: https://developer.android.com/topic/libraries/architecture/livedata
-[14]: https://developer.android.com/topic/libraries/architecture/navigation/
-[16]: https://developer.android.com/topic/libraries/architecture/room
-[17]: https://developer.android.com/topic/libraries/architecture/viewmodel
-[18]: https://developer.android.com/topic/libraries/architecture/workmanager
-[30]: https://developer.android.com/guide/topics/ui
-[31]: https://developer.android.com/training/animation/
-[34]: https://developer.android.com/guide/components/fragments
-[35]: https://developer.android.com/guide/topics/ui/declaring-layout
-[90]: https://bumptech.github.io/glide/
-[91]: https://kotlinlang.org/docs/reference/coroutines-overview.html
-[92]: https://developer.android.com/training/dependency-injection/hilt-android
-[93]: https://developer.android.com/training/dependency-injection
 
-Upcoming features
------------------
-Updates will include incorporating additional Jetpack components and updating existing components
-as the component libraries evolve.
+## Setup 
 
-Interested in seeing a particular feature of the Android Framework or Jetpack implemented in this
-app? Please open a new [issue](https://github.com/android/sunflower/issues).
+- To set up the project use the instructions [here](https://github.com/a-padinha/sunflower#getting-started).
+- The project is set by default to run the tests with gradle using the command
+```
+$ ./gradlew connectedAndroidTest   
+```
+But! if you run into build/run problems like I did, one solution in order to see the test running is to run the test from the IDE.
+1. Checkout the branch `origin/A-1_addUITestsWithEspresso`
+2. Open Android studio 
+3. Run the test from the class
 
-Android Studio IDE setup
-------------------------
-For development, the latest version of Android Studio is required. The latest version can be
-downloaded from [here](https://developer.android.com/studio/).
 
-Sunflower uses [ktlint](https://ktlint.github.io/) to enforce Kotlin coding styles.
-Here's how to configure it for use with Android Studio (instructions adapted
-from the ktlint [README](https://github.com/shyiko/ktlint/blob/master/README.md)):
-
-- Close Android Studio if it's open
-
-- Download ktlint using these [installation instructions](https://github.com/pinterest/ktlint/blob/master/README.md#installation)
-
-- Apply ktlint settings to Android Studio using these [instructions](https://github.com/pinterest/ktlint/blob/master/README.md#-with-intellij-idea)
-
-- Start Android Studio
-
-Additional resources
---------------------
-Check out these Wiki pages to learn more about Android Sunflower:
-
-- [Notable Community Contributions](https://github.com/android/sunflower/wiki/Notable-Community-Contributions)
-
-- [Publications](https://github.com/android/sunflower/wiki/Sunflower-Publications)
-
-Non-Goals
----------
-The focus of this project is on Android Jetpack and the Android framework.
-Thus, there are no immediate plans to implement features outside of this scope.
-
-Support
--------
-
-- Stack Overflow:
-  - https://stackoverflow.com/questions/tagged/android
-  - https://stackoverflow.com/questions/tagged/android-jetpack
-
-If you've found an error in this sample, please file an issue:
-https://github.com/android/sunflower/issues
-
-Patches are encouraged, and may be submitted by forking this project and submitting a pull request
-through GitHub.
-
-Third Party Content
--------------------
-Select text used for describing the plants (in `plants.json`) are used from Wikipedia via CC BY-SA 3.0 US (license in `ASSETS_LICENSE`).
-
-"[seed](https://thenounproject.com/search/?q=seed&i=1585971)" by [Aisyah](https://thenounproject.com/aisyahalmasyira/) is licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/us/legalcode)
-
-License
--------
-
-Copyright 2018 Google, Inc.
-
-Licensed to the Apache Software Foundation (ASF) under one or more contributor
-license agreements.  See the NOTICE file distributed with this work for
-additional information regarding copyright ownership.  The ASF licenses this
-file to you under the Apache License, Version 2.0 (the "License"); you may not
-use this file except in compliance with the License.  You may obtain a copy of
-the License at
-
-  https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
-License for the specific language governing permissions and limitations under
-the License.
